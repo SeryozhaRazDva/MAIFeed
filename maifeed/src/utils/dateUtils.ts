@@ -1,7 +1,13 @@
 export const getWeekEnd = () => {
   const today = new Date();
+  // Получаем день недели (0 = воскресенье, 1 = понедельник, ..., 6 = суббота)
+  const dayOfWeek = today.getDay();
+  // Вычисляем количество дней до воскресенья (0 если сегодня воскресенье)
+  const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+  
   const weekEnd = new Date(today);
-  weekEnd.setDate(weekEnd.getDate() + 7);
+  weekEnd.setDate(weekEnd.getDate() + daysUntilSunday);
+  weekEnd.setHours(23, 59, 59, 999);
   return weekEnd;
 };
 
@@ -29,14 +35,23 @@ export const getDateHeader = (date: Date) => {
 
 export const isDefaultWeek = (startDate: Date, endDate: Date) => {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const weekEnd = new Date(today);
-  weekEnd.setDate(weekEnd.getDate() + 7);
+  const dayOfWeek = today.getDay();
+  const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + diff);
+  monday.setHours(0, 0, 0, 0);
+  
+  const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() + daysUntilSunday);
+  sunday.setHours(23, 59, 59, 999);
+  
   const start = new Date(startDate);
   start.setHours(0, 0, 0, 0);
   const end = new Date(endDate);
-  end.setHours(0, 0, 0, 0);
-  return start.getTime() === today.getTime() && end.getTime() === weekEnd.getTime();
+  
+  return start.getTime() === monday.getTime() && 
+         end.toDateString() === sunday.toDateString();
 };
 
 export const getDateRangeText = (startDate: Date, endDate: Date) => {

@@ -18,14 +18,18 @@ export function EventFeed({ selectedGroupName, selectedGroupId, onBackToSelector
   const { colors } = styles;
   const [showCalendar, setShowCalendar] = useState(false);
   
-  // Обнуляем время для правильного диапазона дат
-  const getToday = () => {
+  // Получаем начало недели (понедельник)
+  const getMonday = () => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
+    const dayOfWeek = today.getDay(); // 0 = воскресенье, 1 = понедельник
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // если воскресенье, то -6 дней
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diff);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
   };
   
-  const [startDate, setStartDate] = useState<Date>(getToday());
+  const [startDate, setStartDate] = useState<Date>(getMonday());
   const [endDate, setEndDate] = useState<Date>(getWeekEnd());
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
   const [pullStartY, setPullStartY] = useState(0);
