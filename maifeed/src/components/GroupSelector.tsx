@@ -11,22 +11,17 @@ interface GroupSelectorProps {
   setSelectedGroupName: (val: string) => void;
   courses: any[];
   groups: any[];
-  lastConfirmedGroupName: string;
-  lastConfirmedInstitute: string;
-  lastConfirmedCourse: string;
-  lastConfirmedGroup: string;
   onConfirm: () => void;
-  onRestoreLastGroup: () => void;
   styles: any;
 }
 
 export const GroupSelector = ({
   institutes, selectedInstitute, setSelectedInstitute,
   selectedCourse, setSelectedCourse, selectedGroup, setSelectedGroup,
-  setSelectedGroupName, courses, groups, lastConfirmedGroupName,
-  onConfirm, onRestoreLastGroup, styles
+  setSelectedGroupName, courses, groups,
+  onConfirm, styles
 }: GroupSelectorProps) => {
-  const { container, card, select, button, colors } = styles;
+  const { container, card, select, button } = styles;
 
   return (
     <div style={container}>
@@ -76,20 +71,6 @@ export const GroupSelector = ({
         <button style={button} onClick={onConfirm} disabled={!selectedGroup}>
           Подтвердить
         </button>
-
-        {lastConfirmedGroupName && (
-          <div style={{
-            marginTop: '16px',
-            padding: '12px',
-            fontSize: '14px',
-            cursor: 'pointer',
-            color: colors.linkColor,
-            fontWeight: 500,
-            textAlign: 'center',
-          }} onClick={onRestoreLastGroup}>
-            Вы смотрели группу: <span style={{ textDecoration: 'underline' }}>{lastConfirmedGroupName}</span>
-          </div>
-        )}
       </div>
     </div>
   );

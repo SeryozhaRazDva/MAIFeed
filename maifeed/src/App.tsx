@@ -40,10 +40,6 @@ function App() {
   const [selectedCourse, setSelectedCourse] = useState(savedData?.course || '');
   const [selectedGroup, setSelectedGroup] = useState(savedData?.group || '');
   const [selectedGroupName, setSelectedGroupName] = useState(savedData?.groupName || '');
-  const [lastConfirmedInstitute, setLastConfirmedInstitute] = useState('');
-  const [lastConfirmedCourse, setLastConfirmedCourse] = useState('');
-  const [lastConfirmedGroup, setLastConfirmedGroup] = useState('');
-  const [lastConfirmedGroupName, setLastConfirmedGroupName] = useState('');
 
   const institutes = maiData;
   const selectedInstituteData = institutes.find(i => i.id === selectedInstitute);
@@ -82,10 +78,6 @@ function App() {
         setSelectedGroupName={setSelectedGroupName}
         courses={courses}
         groups={groups}
-        lastConfirmedGroupName={lastConfirmedGroupName}
-        lastConfirmedInstitute={lastConfirmedInstitute}
-        lastConfirmedCourse={lastConfirmedCourse}
-        lastConfirmedGroup={lastConfirmedGroup}
         onConfirm={() => {
           if (selectedGroup) {
             // Сохранение в localStorage
@@ -101,17 +93,8 @@ function App() {
               console.error('Error saving data:', error);
             }
             
-            setLastConfirmedInstitute(selectedInstitute);
-            setLastConfirmedCourse(selectedCourse);
-            setLastConfirmedGroup(selectedGroup);
-            setLastConfirmedGroupName(selectedGroupName);
             setPage(2);
           }
-        }}
-        onRestoreLastGroup={() => {
-          setSelectedInstitute(lastConfirmedInstitute);
-          setSelectedCourse(lastConfirmedCourse);
-          setSelectedGroup(lastConfirmedGroup);
         }}
         styles={styles}
       />
