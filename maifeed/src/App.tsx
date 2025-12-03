@@ -19,11 +19,27 @@ function App() {
   const theme = window.Telegram?.WebApp?.themeParams;
   const styles = createStyles(theme);
 
-  const [page, setPage] = useState(0);
-  const [selectedInstitute, setSelectedInstitute] = useState('');
-  const [selectedCourse, setSelectedCourse] = useState('');
-  const [selectedGroup, setSelectedGroup] = useState('');
-  const [selectedGroupName, setSelectedGroupName] = useState('');
+  // Загрузка сохраненных данных из localStorage
+  const loadSavedData = () => {
+    try {
+      const saved = localStorage.getItem('maifeed_user_group');
+      if (saved) {
+        const data = JSON.parse(saved);
+        return data;
+      }
+    } catch (error) {
+      console.error('Error loading saved data:', error);
+    }
+    return null;
+  };
+
+  const savedData = loadSavedData();
+
+  const [page, setPage] = useState(savedData ? 2 : 0);
+  const [selectedInstitute, setSelectedInstitute] = useState(savedData?.institute || '');
+  const [selectedCourse, setSelectedCourse] = useState(savedData?.course || '');
+  const [selectedGroup, setSelectedGroup] = useState(savedData?.group || '');
+  const [selectedGroupName, setSelectedGroupName] = useState(savedData?.groupName || '');
   const [lastConfirmedInstitute, setLastConfirmedInstitute] = useState('');
   const [lastConfirmedCourse, setLastConfirmedCourse] = useState('');
   const [lastConfirmedGroup, setLastConfirmedGroup] = useState('');
@@ -72,6 +88,19 @@ function App() {
         lastConfirmedGroup={lastConfirmedGroup}
         onConfirm={() => {
           if (selectedGroup) {
+            // Сохранение в localStorage
+            try {
+              const dataToSave = {
+                institute: selectedInstitute,
+                course: selectedCourse,
+                group: selectedGroup,
+                groupName: selectedGroupName,
+              };
+              localStorage.setItem('maifeed_user_group', JSON.stringify(dataToSave));
+            } catch (error) {
+              console.error('Error saving data:', error);
+            }
+            
             setLastConfirmedInstitute(selectedInstitute);
             setLastConfirmedCourse(selectedCourse);
             setLastConfirmedGroup(selectedGroup);
