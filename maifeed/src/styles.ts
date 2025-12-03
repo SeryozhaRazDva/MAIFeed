@@ -96,6 +96,7 @@ export const createStyles = (theme: any) => {
       buttonColor,
       linkColor,
       hintColor,
+      secondaryBgColor: `${bgColor}cc`,
     },
 
     theme,

@@ -2,6 +2,8 @@
 const MODERATOR_USERNAMES = [
   'SeryozhaRazDva',
   'Kotyatyq',
+  'ffedosick',
+  'Alex_k_5887',
 ];
 
 // Проверка является ли пользователь модератором
