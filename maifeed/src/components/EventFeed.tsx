@@ -237,35 +237,9 @@ export function EventFeed({ selectedGroupName, selectedGroupId, onBackToSelector
                       border: `1px solid ${colors.hintColor}40`,
                       boxShadow: `0 2px 8px ${colors.linkColor}20`,
                       cursor: 'pointer',
-                      position: 'relative',
                     }}
                     onClick={() => setExpandedEventId(isExpanded ? null : event.id)}
                   >
-                    {isModerator(user?.username) && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteEvent(event.id!, event.title);
-                        }}
-                        style={{
-                          position: 'absolute',
-                          top: '12px',
-                          right: '12px',
-                          background: '#ef4444',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '8px',
-                          padding: '6px 12px',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          zIndex: 10,
-                        }}
-                        title="Удалить событие"
-                      >
-                        🗑️ Удалить
-                      </button>
-                    )}
                     <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>
                       {event.title}
                     </h3>
@@ -320,6 +294,29 @@ export function EventFeed({ selectedGroupName, selectedGroupId, onBackToSelector
                               {event.registrationLink}
                             </a>
                           </div>
+                        )}
+                        
+                        {isModerator(user?.username) && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteEvent(event.id!, event.title);
+                            }}
+                            style={{
+                              width: '100%',
+                              marginTop: '12px',
+                              background: '#ef4444',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '10px',
+                              fontSize: '14px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            🗑️ Удалить событие
+                          </button>
                         )}
                       </div>
                     )}
