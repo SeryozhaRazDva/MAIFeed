@@ -307,7 +307,6 @@ export function EventFeed({ selectedGroupName, selectedGroupId, onBackToSelector
           setShowCreateModal(false);
           loadEvents();
         }}
-        groupId={selectedGroupId}
         user={user}
         colors={colors}
         styles={styles}

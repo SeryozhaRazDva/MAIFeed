@@ -6,13 +6,12 @@ import { isTelegramUser } from '../utils/auth';
 interface CreateEventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  groupId: string;
   user: any;
   colors: any;
   styles: any;
 }
 
-export function CreateEventModal({ isOpen, onClose, groupId, user, colors, styles }: CreateEventModalProps) {
+export function CreateEventModal({ isOpen, onClose, user, colors, styles }: CreateEventModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
@@ -39,6 +38,14 @@ export function CreateEventModal({ isOpen, onClose, groupId, user, colors, style
 
   if (!isOpen) return null;
 
+  const validateTime = (timeString: string): boolean => {
+    const parts = timeString.split(':');
+    if (parts.length !== 2) return false;
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -53,11 +60,23 @@ export function CreateEventModal({ isOpen, onClose, groupId, user, colors, style
       return;
     }
 
+    // Валидация времени
+    if (!validateTime(time)) {
+      alert('Неверный формат времени начала. Используйте 24-часовой формат (00:00 - 23:59)');
+      return;
+    }
+    if (endTime && !validateTime(endTime)) {
+      alert('Неверный формат времени окончания. Используйте 24-часовой формат (00:00 - 23:59)');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const institute = selectedInstitute?.name || undefined;
-      const course = selectedCourse?.name || undefined;
-      const studentGroup = groups.find(g => g.id === selectedGroupId)?.name || undefined;
+      // Целевая аудитория - то что ВЫБРАЛ пользователь в форме
+      const targetInstitute = selectedInstitute?.name || undefined;
+      const targetCourse = selectedCourse?.name || undefined;
+      const targetGroup = groups.find(g => g.id === selectedGroupId)?.name || undefined;
+      const targetGroupId = selectedGroupId || undefined;
 
       await createEvent({
         title,
@@ -66,13 +85,16 @@ export function CreateEventModal({ isOpen, onClose, groupId, user, colors, style
         time,
         endTime,
         location,
-        institute,
-        course,
-        studentGroup,
+        // Целевая аудитория события (для кого оно предназначено)
+        institute: targetInstitute,
+        course: targetCourse,
+        studentGroup: targetGroup,
+        // Данные организатора
         organizerId: user?.id?.toString() || 'unknown',
         organizerName: user?.first_name || 'Аноним',
         organizerUsername: user?.username ? `@${user.username}` : '@unknown',
-        groupId,
+        // groupId теперь используется для фильтрации - если не указан, событие для всех
+        groupId: targetGroupId || 'all',
         registrationLink: contactInfo,
       });
 
@@ -188,13 +210,15 @@ export function CreateEventModal({ isOpen, onClose, groupId, user, colors, style
                 onBlur={(e) => {
                   const parts = e.target.value.split(':');
                   if (parts.length === 2) {
-                    const h = parts[0].padStart(2, '0');
-                    const m = parts[1].padStart(2, '0');
-                    setTime(`${h}:${m}`);
+                    let h = parseInt(parts[0], 10);
+                    let m = parseInt(parts[1], 10);
+                    if (h > 23) h = 23;
+                    if (m > 59) m = 59;
+                    setTime(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
                   }
                 }}
                 style={inputStyle}
-                placeholder="Например: 14:30"
+                placeholder="14:30"
                 maxLength={5}
                 required
               />
@@ -211,13 +235,15 @@ export function CreateEventModal({ isOpen, onClose, groupId, user, colors, style
                 onBlur={(e) => {
                   const parts = e.target.value.split(':');
                   if (parts.length === 2) {
-                    const h = parts[0].padStart(2, '0');
-                    const m = parts[1].padStart(2, '0');
-                    setEndTime(`${h}:${m}`);
+                    let h = parseInt(parts[0], 10);
+                    let m = parseInt(parts[1], 10);
+                    if (h > 23) h = 23;
+                    if (m > 59) m = 59;
+                    setEndTime(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
                   }
                 }}
                 style={inputStyle}
-                placeholder="Например: 16:00"
+                placeholder="16:00"
                 maxLength={5}
               />
             </div>

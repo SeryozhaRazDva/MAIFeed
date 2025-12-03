@@ -46,9 +46,9 @@ export const createEvent = async (event: Omit<Event, 'id' | 'createdAt' | 'statu
 
 export const getEventsByGroup = async (groupId: string, startDate: Date, endDate: Date) => {
   try {
+    // Получаем все одобренные события в диапазоне дат
     const q = query(
       collection(db, 'events'),
-      where('groupId', '==', groupId),
       where('status', '==', 'approved'),
       where('date', '>=', Timestamp.fromDate(startDate)),
       where('date', '<=', Timestamp.fromDate(endDate)),
@@ -56,12 +56,18 @@ export const getEventsByGroup = async (groupId: string, startDate: Date, endDate
     );
     
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
+    const allEvents = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       date: doc.data().date.toDate(),
       createdAt: doc.data().createdAt.toDate(),
     })) as Event[];
+
+    // Фильтрация на клиенте: показываем события "для всех" (groupId='all') 
+    // ИЛИ события для конкретной группы пользователя
+    return allEvents.filter(event => 
+      event.groupId === 'all' || event.groupId === groupId
+    );
   } catch (error) {
     console.error('Error fetching events:', error);
     throw error;

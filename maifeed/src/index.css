@@ -1,3 +1,7 @@
+* {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
