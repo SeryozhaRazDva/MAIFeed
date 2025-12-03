@@ -3,6 +3,9 @@ declare global {
       Telegram?: {
         WebApp?: {
           ready(): void;
+          expand(): void;
+          enableClosingConfirmation(): void;
+          disableClosingConfirmation(): void;
           colorScheme?: 'light' | 'dark';
           themeParams?: {
             bg_color?: string;
@@ -17,6 +20,7 @@ declare global {
             user?: {
               id: number;
               first_name: string;
+              photo_url?: string;
               last_name?: string;
               username?: string;
               language_code?: string;

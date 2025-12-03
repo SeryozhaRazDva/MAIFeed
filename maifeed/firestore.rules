@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // События (events) - ВРЕМЕННЫЕ ПРАВИЛА ДЛЯ РАЗРАБОТКИ
+    match /events/{eventId} {
+      // Читать могут все
+      allow read: if true;
+      
+      // Создавать могут все (временно, без авторизации)
+      allow create: if request.resource.data.status == 'pending';
+      
+      // Обновлять могут все (временно)
+      // TODO: добавить проверку авторизации после внедрения Firebase Auth
+      allow update: if true;
+      
+      // Удалять могут все (временно)
+      allow delete: if true;
+    }
+  }
+}

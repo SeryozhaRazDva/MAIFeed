@@ -1,73 +1,153 @@
-# React + TypeScript + Vite
+# MAIFeed
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Централизованная платформа для оповещения студентов МАИ о событиях в университете.
 
-Currently, two official plugins are available:
+## 🚀 Технологии
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19.2.0** + TypeScript - UI фреймворк
+- **Vite 7.2.6** - Сборщик и dev-сервер
+- **Firebase Firestore** - База данных
+- **Telegram WebApp** - Авторизация и интеграция
 
-## React Compiler
+## 📦 Установка
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠 Разработка
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Откроется на `http://localhost:5173`
+
+## 🏗 Сборка
+
+```bash
+npm run build
+```
+
+Результат в папке `dist/`
+
+## 🚢 Деплой
+
+```bash
+firebase deploy
+```
+
+Деплоит:
+- Firestore правила безопасности
+- Firestore индексы
+- Hosting (React приложение)
+
+Приложение доступно на: **https://maifeed.web.app**
+
+## 📁 Структура проекта
+
+```
+src/
+├── components/         # React компоненты
+│   ├── WelcomePage.tsx        # Страница приветствия
+│   ├── GroupSelector.tsx      # Выбор института/курса/группы
+│   ├── EventFeed.tsx          # Лента событий
+│   ├── CreateEventModal.tsx   # Форма создания события
+│   └── ModerationPanel.tsx    # Админ-панель модерации
+│
+├── services/          # Логика работы с Firebase
+│   ├── eventService.ts        # CRUD операции с событиями
+│   └── moderationService.ts   # Одобрение/отклонение событий
+│
+├── utils/             # Утилиты
+│   ├── dateUtils.ts           # Работа с датами
+│   └── auth.ts                # Проверка модераторов и Telegram
+│
+├── types/             # TypeScript типы
+│   └── telegram.d.ts          # Типы Telegram WebApp API
+│
+├── firebase.ts        # Конфигурация Firebase
+├── maiData.ts         # Данные институтов/курсов/групп (4172 строки)
+├── styles.ts          # Стили и темы приложения
+├── App.tsx            # Главный компонент-роутер
+├── main.tsx           # Точка входа
+└── index.css          # Глобальные стили
+```
+
+## ✨ Основные возможности
+
+### Для студентов:
+- 📋 Просмотр событий по своей группе
+- 📅 Фильтрация по дате (календарь)
+- ➕ Создание событий (отправляются на модерацию)
+- 🔄 Pull-to-refresh обновление ленты
+- 🎯 Автоматическая подстановка @username при создании события
+
+### Для модераторов:
+- 👤 Панель модерации (доступ только по username)
+- ✅ Одобрение событий
+- ❌ Отклонение событий
+- 📊 Просмотр всех pending событий
+
+## 🔐 Безопасность
+
+**Модераторы** (hardcoded в `src/utils/auth.ts`):
+- @SeryozhaRazDva
+- @Kotyatyq
+
+**Правила:**
+- Создавать события могут только пользователи Telegram WebApp
+- Видеть панель модерации могут только модераторы
+- Все события проходят модерацию перед публикацией
+- Firestore правила защищают данные на уровне базы
+
+## 📊 База данных
+
+**Коллекция:** `events`
+
+**Поля события:**
+```typescript
+{
+  title: string              // Название
+  description: string        // Описание
+  date: Timestamp            // Дата
+  time: string               // Время начала (HH:MM)
+  endTime?: string           // Время окончания
+  location: string           // Место
+  institute?: string         // Институт
+  course?: string            // Курс
+  studentGroup?: string      // Группа
+  organizerId: string        // Telegram ID создателя
+  organizerName: string      // Имя
+  organizerUsername: string  // @username
+  groupId: string            // ID группы из maiData
+  registrationLink?: string  // Где записаться
+  status: 'pending' | 'approved' | 'rejected'
+  createdAt: Timestamp
+}
+```
+
+## 🎨 Дизайн
+
+- Адаптивная тема (светлая/темная) из Telegram
+- Цвета берутся из `window.Telegram.WebApp.themeParams`
+- Плавные анимации (fadeIn, scaleIn, slideInUp)
+- Минималистичный современный дизайн
+
+## 📝 TODO
+
+- [ ] Множественные подписки на группы
+- [ ] Push-уведомления через Telegram Bot
+- [ ] Редактирование своих событий
+- [ ] AI-парсер постов из каналов МАИ
+- [ ] Поиск по событиям
+- [ ] Избранное
+- [ ] Статистика для организаторов
+
+## 📄 Лицензия
+
+MIT
+
+---
+
+Сделано с ❤️ для студентов МАИ
