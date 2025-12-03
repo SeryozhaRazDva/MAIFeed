@@ -1,4 +1,4 @@
-import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, orderBy, Timestamp, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export interface Event {
@@ -70,6 +70,17 @@ export const getEventsByGroup = async (groupId: string, startDate: Date, endDate
     );
   } catch (error) {
     console.error('Error fetching events:', error);
+    throw error;
+  }
+};
+
+// Удалить событие
+export const deleteEvent = async (eventId: string) => {
+  try {
+    const eventRef = doc(db, 'events', eventId);
+    await deleteDoc(eventRef);
+  } catch (error) {
+    console.error('Error deleting event:', error);
     throw error;
   }
 };
